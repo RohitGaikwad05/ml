@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import re
 import string
+import os
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -17,19 +18,19 @@ st.set_page_config(page_title="Twitter Sentiment Analyzer", layout="wide")
 st.title("💬 Twitter Sentiment Analysis")
 st.markdown("Analyze tweet sentiment (Positive or Negative) using Logistic Regression.")
 
-# Sidebar for file upload
-st.sidebar.title("Upload Dataset")
-uploaded_file = st.sidebar.file_uploader("Upload a sampled Twitter dataset (<300MB)", type=["csv"])
+# Load dataset from local path
+DATA_PATH = "TwitterData_1MB.csv"  # Make sure this file exists in the same directory or adjust the path
 
-# Column names
+# Column names (if no header in CSV)
 column_names = ['target', 'id', 'date', 'query', 'user', 'text']
 
-# Load dataset
-if uploaded_file:
-    df = pd.read_csv(uploaded_file, encoding='latin-1', names=column_names)
-else:
-    st.warning("📂 Please upload a CSV file (sampled under 300MB).")
+# Check if the file exists
+if not os.path.exists(DATA_PATH):
+    st.error(f"Dataset not found at `{DATA_PATH}`. Please check the path.")
     st.stop()
+
+# Read CSV
+df = pd.read_csv(DATA_PATH, encoding='latin-1', names=column_names)
 
 # Preprocess text
 def clean_text(text):
